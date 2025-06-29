@@ -10,51 +10,52 @@ const generateToken = (userId) => {
 
 // POST /api/auth/register
 exports.registerUser = async (req, res) => {
-  const { username, email, password } = req.body;
+    const {username, email, password} = req.body;
 
-  console.log("Register request:", req.body); // ✅ Debug
+    console.log("Register request:", req.body); // ✅ Debug
+    console.log("🟡 Mongoose validation settings:", User.schema.obj);
+    console.log("🟢 Incoming data:", {username, email, password});
 
-  if (!username || !email || !password) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
-
-  try {
-    const existing = await User.findOne({ email });
-    if (existing) {
-      return res.status(400).json({ message: "Email already registered" });
+    if (!username || !email || !password) {
+        return res.status(400).json({message: "All fields are required"});
     }
 
-    if (username.length < 3) {
-      return res.status(400).json({ message: "Username too short" });
+    try {
+        const existing = await User.findOne({email});
+        if (existing) {
+            return res.status(400).json({message: "Email already registered"});
+        }
+
+        if (username.length < 3) {
+            return res.status(400).json({message: "Username too short"});
+        }
+
+        const hashed = await bcrypt.hash(password, 12);
+
+        const user = await User.create({
+            username,
+            email,
+            passwordHash: hashed,
+        });
+
+        const token = generateToken(user._id);
+
+        res.status(201).json({
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+            },
+            token,
+        });
+    } catch (err) {
+        console.error("🔴 Registration failed:", err); // Show full object
+        res.status(500).json({
+            message: "Registration failed",
+            error: err.message,
+        });
     }
-
-    const hashed = await bcrypt.hash(password, 12);
-
-    const user = await User.create({
-      username,
-      email,
-      passwordHash: hashed,
-    });
-
-    const token = generateToken(user._id);
-
-    res.status(201).json({
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-      },
-      token,
-    });
-  } catch (err) {
-    console.error("Registration error:", err.message);
-    res.status(500).json({
-      message: "Registration failed",
-      error: err.message,
-    });
-  }
 };
-
 
 // POST /api/auth/login
 exports.loginUser = async (req, res) => {
