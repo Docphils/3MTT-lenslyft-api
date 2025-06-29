@@ -34,7 +34,7 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/social', socialRoutes);
 
 // Health check route
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
   res.send('API is running...');
 });
 
