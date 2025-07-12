@@ -9,6 +9,7 @@ const movieRoutes = require('./routes/movieRoutes');
 const userRoutes = require('./routes/userRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const socialRoutes = require('./routes/socialRoutes');
+const aiRoutes = require('./routes/aiRoutes');
 
 
 
@@ -32,6 +33,7 @@ app.use('/api/movies', movieRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/social', socialRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Health check route
 app.get('/api', (req, res) => {
