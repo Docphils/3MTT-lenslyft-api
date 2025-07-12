@@ -69,6 +69,7 @@ exports.getMovieDetail = async (req, res) => {
                 : "",
             genres: (detail.genres || []).map((g) => g.name),
             releaseDate: detail.release_date || "",
+            averageRating: detail.vote_average || 0,
             cast: credits.slice(0, 5).map((c) => c.name),
         };
 
